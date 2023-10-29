@@ -1,0 +1,12 @@
+.video-js *{
+  font-size: 10px;
+}
+.video-js .vjs-control-bar{
+  background-color: transparent;
+}
+.video-js .vjs-big-play-button{
+  display: none;
+}
+.video-js .vjs-current-time{
+  display: block;
+}

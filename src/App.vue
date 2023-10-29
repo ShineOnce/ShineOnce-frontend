@@ -5,7 +5,7 @@
     </div>
     <div class="content">
       <NavBar></NavBar>
-      <router-view/>
+      <router-view style="height: calc(100% - 65px)"></router-view>
     </div>
 
   </div>
@@ -24,14 +24,23 @@ export default {
 *{
   margin: 0;
   padding: 0;
+  font-size: 14px;
 }
+.scroll{
+  overflow: scroll;
+}
+::-webkit-scrollbar{
+  display: none;
+}
+
 #app {
   height: 100vh;
   width: 100vw;
-  background-color: rgba(22,24,35,0.9);
+  background-color: rgb(22,24,35);
   display: flex;
   .sidebar {
     height: 100%;
+    min-width: 45px;
     width: 10%;
     display: inline-block;
   }
