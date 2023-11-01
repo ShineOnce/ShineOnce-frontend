@@ -17,9 +17,9 @@
           {{this.duration(this.video.duration)}}
         </span>
       </div>
-      <div class="custom-progress-bar" ref="progress_bar">
-        <div class="custom-progress-bar-fill" ref="progress_bar_fill"></div>
-        <div class="custom-progress-bar-drag" ref="progress_bar_drag"></div>
+      <div class="ProgressBar" ref="progress_bar" @click.stop>
+        <div class="ProgressBar-fill" ref="progress_bar_fill"></div>
+        <div class="ProgressBar-drag" ref="progress_bar_drag"></div>
       </div>
     </div>
     <div class="text" v-if="this.video.videoUrl">
@@ -112,6 +112,7 @@ export default {
         })
         // 添加事件处理程序以更新自定义进度条
         player.on('timeupdate', updateProgressBar)
+        var progressBar = ref.progress_bar
         var progressBarFill = this.$refs.progress_bar_fill
         var progressBarDrag = this.$refs.progress_bar_drag
 
@@ -124,6 +125,15 @@ export default {
         var drag = false
         progressBarDrag.addEventListener('mousedown', ev => {
           drag = true
+        })
+        progressBar.addEventListener('mousedown', ev => {
+          drag = true
+          let x = ev.offsetX
+          progressBarDrag.style.left = x + 'px'
+          progressBarFill.style.width = x + 'px'
+          var newTime = x / progressBar.getBoundingClientRect().width * player.duration()
+          player.currentTime(newTime)
+          player.play()
         })
         this.$refs.videoCard.addEventListener('mousemove', (ev) => {
           if (drag) {
@@ -177,7 +187,7 @@ export default {
       width: 100%;
     }
 
-    .custom-progress-bar {
+    .ProgressBar {
       position: absolute;
       bottom: 0;
       left: 0;
@@ -186,18 +196,18 @@ export default {
       visibility: hidden;
       background-color: rgba(255, 255, 255, 0.3);
 
-      .custom-progress-bar-fill {
+      .ProgressBar-fill {
         height: 100%;
         width: 0;
         background-color: rgba(255, 255, 255, 0.8);
         pointer-events: none;
       }
 
-      .custom-progress-bar-drag {
+      .ProgressBar-drag {
         position: absolute;
         bottom: 0;
         transform: translate(0, 50%);
-        z-index: 10;
+        z-index: 2;
         width: 10px;
         height: 10px;
         border-radius: 5px;
@@ -216,7 +226,7 @@ export default {
       height: 30px;
       background-color: transparent;
       position: absolute;
-      z-index: 10;
+      z-index: 2;
       bottom: 0px;
       .duration{
         position: absolute;

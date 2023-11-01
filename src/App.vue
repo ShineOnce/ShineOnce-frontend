@@ -4,7 +4,7 @@
       <SideBar></SideBar>
     </div>
     <div class="content">
-      <NavBar></NavBar>
+      <NavBar style="height: 65px"></NavBar>
       <router-view style="height: calc(100% - 65px)"></router-view>
     </div>
 
@@ -25,6 +25,8 @@ export default {
   margin: 0;
   padding: 0;
   font-size: 14px;
+  text-decoration: none;
+  list-style: none;
 }
 .scroll{
   overflow: scroll;
@@ -38,6 +40,7 @@ export default {
   width: 100vw;
   background-color: rgb(22,24,35);
   display: flex;
+  overflow: hidden;
   .sidebar {
     height: 100%;
     min-width: 45px;

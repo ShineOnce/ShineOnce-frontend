@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import Video from './modules/video'
 Vue.use(Vuex)
-const state = {
-  isCollapse: false
-}
 
 export default new Vuex.Store({
-  state
+  modules: {
+    Video
+  }
 })

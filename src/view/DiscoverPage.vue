@@ -1,22 +1,26 @@
 <template>
   <div id="homepage">
-      <ul class="container infinite-list" v-infinite-scroll="load" infinite-scroll-distance="10"  ref="container">
-        <li v-for="video in this.videos" v-bind:key="video.id"  class="item" ref="item">
-          <video-card v-bind:video="video" :sortCard="sortVideo" ref="videoCard"></video-card>
-        </li>
-      </ul>
+    <ul class="container infinite-list" v-infinite-scroll="load" infinite-scroll-distance="10"  ref="container">
+      <li v-for="(video, id) in this.videos" v-bind:key="id"  class="item" ref="item">
+        <routerLink :to="'video/'+id">
+          <video-card v-bind:video="video" :sortCard="sortVideo" ref="videoCard" ></video-card>
+        </routerLink>
+      </li>
+    </ul>
+
   </div>
 </template>
 
 <script>
-import VideoCard from '../components/VideoCard/VideoCard'
+import VideoCard from '../components/Video/VideoCard'
+import VideosPage from '../components/Video/VideosPage'
 let minWidth = 280
 let columnCount = 5
 let width
 let height = [0, 0, 0, 0, 0]
 export default {
   name: 'Homepage',
-  components: {VideoCard},
+  components: {VideosPage, VideoCard},
   data () {
     return {
       videos: [
@@ -145,8 +149,18 @@ export default {
           duration: 20,
           times: 2.4,
           title: '成分：磷酸氯钙、去离子水、硫酸铝钙二水合物'
+        },
+        {
+          id: 14,
+          videoUrl: 'http://s3dzewpfp.hn-bkt.clouddn.com/video/123456/Counter-Strike-Global-Offensive__2023-09-19__16-23-35.mp4?e=1698852815&token=4rdOegZZUy1gurS8qMMI7AZN12p0p62vIaaH08QR:VL43zf5QvBztREdUdkCBl2gpOzY=',
+          CountyCoverUrl: '',
+          likeNum: 3577,
+          duration: 20,
+          times: 2.4,
+          title: '成分：磷酸氯钙、去离子水、硫酸铝钙二水合物'
         }
-      ]
+      ],
+      videoId: -1
     }
   },
   mounted () {
@@ -157,12 +171,15 @@ export default {
     })
   },
   methods: {
+    setVideoId (id) {
+      this.$set(this.$data, 'videoId', id)
+    },
     sortVideo () {
       let math = this.$math
       height.fill(0, 0, 5)
       columnCount = 5
       while (columnCount) {
-        width = math.subtract(math.divide(this.$refs.container.getBoundingClientRect().width, columnCount), -10)
+        width = math.subtract(math.divide(this.$refs.container.getBoundingClientRect().width, columnCount), 10)
         if (width > minWidth) {
           break
         }
@@ -256,10 +273,17 @@ export default {
   position: relative;
   overflow: hidden;
   width: 100%;
+  .VideosPage{
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
   .container{
     overflow: auto;
     position: relative;
-    width: 100%;
+    width: 95%;
     height: 100%;
     margin: auto auto;
     //display: grid;
@@ -275,6 +299,7 @@ export default {
     //margin-bottom: 10px;
     //counter-increment: item-counter;
     //position: absolute;
+    cursor: pointer;
     visibility: hidden;
     position: absolute;
   }
