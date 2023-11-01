@@ -1,0 +1,11 @@
+
+.el-dropdown-menu__item:not(.is-disabled):hover{
+  background-color: transparent;
+  color: white;
+}
+.el-dropdown-menu__item:not(.is-disabled){
+  color: white;
+}
+.popper__arrow::after{
+  border-top-color: rgb(51,52,63);
+}
