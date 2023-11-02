@@ -1,10 +1,12 @@
 <template>
   <div id="VideoCard" ref="videoCard">
     <div class="videoBox" v-if="this.video.videoUrl">
-      <video class="videoElement video-js" ref="video">
-        <source :src="this.video.videoUrl" type="video/mp4"/>
-        <source :src="this.video.videoUrl" type="application/x-mpegURL">
-      </video>
+      <routerLink :to="'video/'+this.video.id">
+        <video class="videoElement video-js" ref="video">
+          <source :src="this.video.videoUrl" type="video/mp4"/>
+          <source :src="this.video.videoUrl" type="application/x-mpegURL">
+        </video>
+      </routerLink>
       <div class="videoInfo" ref="videoInfo">
         <span class="numsOfLike" >
           <span class="iconfont icon-Heart" style="font-size: 20px;font-weight: 700">
@@ -22,17 +24,19 @@
         <div class="ProgressBar-drag" ref="progress_bar_drag"></div>
       </div>
     </div>
-    <div class="text" v-if="this.video.videoUrl">
-      <div class="center">
-        <div class="desc">
-          {{this.video.title}}
-        </div>
-        <div class="info">
-          <span>@ dlam</span>
-          <span>· 23小时前</span>
+    <routerLink :to="'video/'+this.video.id">
+      <div class="text" v-if="this.video.videoUrl">
+        <div class="center">
+          <div class="desc">
+            {{this.video.title}}
+          </div>
+          <div class="info">
+            <span>@ dlam</span>
+            <span>· 23小时前</span>
+          </div>
         </div>
       </div>
-    </div>
+    </routerLink>
   </div>
 </template>
 
@@ -195,7 +199,7 @@ export default {
       height: 2px;
       visibility: hidden;
       background-color: rgba(255, 255, 255, 0.3);
-
+      z-index: 2;
       .ProgressBar-fill {
         height: 100%;
         width: 0;

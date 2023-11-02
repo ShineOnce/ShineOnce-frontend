@@ -2,9 +2,7 @@
   <div id="homepage">
     <ul class="container infinite-list" v-infinite-scroll="load" infinite-scroll-distance="10"  ref="container">
       <li v-for="(video, id) in this.videos" v-bind:key="id"  class="item" ref="item">
-        <routerLink :to="'video/'+id">
-          <video-card v-bind:video="video" :sortCard="sortVideo" ref="videoCard" ></video-card>
-        </routerLink>
+        <video-card v-bind:video="video" :sortCard="sortVideo" ref="videoCard" ></video-card>
       </li>
     </ul>
 
