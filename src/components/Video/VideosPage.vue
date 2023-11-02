@@ -1,7 +1,15 @@
 <template>
   <div class="VideosPage" ref="VideosPage">
     <div class="VideoPageContainer" v-for="(video,id) in currentVideos" :style="{top:id>currentIndex?'100%':id===currentIndex?'0':'-100%'}" :key="id">
-      <video-page class="page" :video="video" :play="id===currentIndex" v-if="Math.abs(id - currentIndex) < 2"  :close="function () {$router.back()}" ref="page" >
+      <video-page
+        class="page"
+        :video="video"
+        :play="id===currentIndex"
+        v-if="Math.abs(id - currentIndex) < 2"
+        :close="function () {$router.back()}"
+        :nextVideo="nextVideo"
+        :lastVideo="lastVideo"
+        ref="page" >
       </video-page>
     </div>
   </div>
@@ -17,6 +25,15 @@ export default {
       currentVideos: [],
       currentIndex: 0,
       testVideos: [
+        {
+          id: 0,
+          videoUrl: './static/1.mp4',
+          CountyCoverUrl: '',
+          likeNum: 158458,
+          duration: 42,
+          times: 1.4,
+          title: '成分：磷酸氯钙、去离子水、硫酸铝钙二水合物'
+        },
         {
           id: 1,
           videoUrl: 'http://s3dzewpfp.hn-bkt.clouddn.com/video/123456/Counter-Strike-Global-Offensive__2023-09-19__16-23-35.mp4?e=1698852815&token=4rdOegZZUy1gurS8qMMI7AZN12p0p62vIaaH08QR:VL43zf5QvBztREdUdkCBl2gpOzY=',
@@ -145,7 +162,6 @@ export default {
       let start = 0
       let end = 0
       let keyDownTimer = null
-      let wheelTimer = null
       document.addEventListener('keydown', (ev) => {
         if (ev.key === 'ArrowDown') {
           clearTimeout(keyDownTimer)
@@ -169,21 +185,6 @@ export default {
         } else if (end - start > 200) {
           this.lastVideo()
         }
-      })
-      this.$refs.VideosPage.addEventListener('wheel', (ev) => {
-        if (ev.deltaY > 0) {
-          clearTimeout(wheelTimer)
-          wheelTimer = setTimeout(() => {
-            this.nextVideo()
-          }, 300)
-        } else if (ev.deltaY < 0) {
-          clearTimeout(wheelTimer)
-          wheelTimer = setTimeout(() => {
-            this.lastVideo()
-          }, 300)
-        }
-      }, {
-        passive: true
       })
     },
     lastVideo () {

@@ -2,16 +2,37 @@
   <div id="VideoPage" ref="VideoPage">
     <div class="background">
       <div class="content">
-        <div class="video" ref="videoContainer">
-          <video class="videoElement video-js" ref="video">
-            <source :src="this.video.videoUrl" type="video/mp4"/>
-          </video>
-          <div class="close" @click="close" ref="close">
-            ×
+        <div class="content-top">
+          <div class="video" ref="videoContainer">
+            <video class="videoElement video-js" ref="video">
+              <source :src="this.video.videoUrl" type="video/mp4"/>
+            </video>
+            <div class="close" @click="close" ref="close">
+              ×
+            </div>
+            <div class="right">
+              <span @click="$refs.comment.style.width='30%'">
+                <VideoButton :icon-class="'el-icon-s-comment'" class="VideoButton" :count="1999" >
+                </VideoButton>
+              </span>
+            </div>
+            <div class="ProgressBar" ref="progress_bar">
+              <div class="ProgressBar-fill" ref="progress_bar_fill"></div>
+              <div class="ProgressBar-drag" ref="progress_bar_drag"></div>
+            </div>
           </div>
-          <div class="ProgressBar" ref="progress_bar">
-            <div class="ProgressBar-fill" ref="progress_bar_fill"></div>
-            <div class="ProgressBar-drag" ref="progress_bar_drag"></div>
+          <div class="comment" ref="comment">
+            <div class="header">
+              <div class="btn">
+                <span class="left">
+                  评论
+                </span>
+                <span class="right" @click="$refs.comment.style.width = '0'">
+                  ×
+                </span>
+              </div>
+            </div>
+            <Comments></Comments>
           </div>
         </div>
         <div class="control">
@@ -50,8 +71,11 @@
 
 <script>
 import store from '../../store'
+import Comments from '../../view/Comments'
+import VideoButton from '../Button/VideoButton'
 export default {
   name: 'VideoPage',
+  components: {VideoButton, Comments},
   data () {
     return {
       videoStatus: {
@@ -76,6 +100,16 @@ export default {
   props: {
     video: {},
     close: {
+      type: Function,
+      require: true,
+      default: null
+    },
+    lastVideo: {
+      type: Function,
+      require: true,
+      default: null
+    },
+    nextVideo: {
       type: Function,
       require: true,
       default: null
@@ -109,6 +143,7 @@ export default {
   methods: {
     GetVideo: function () {
       this.$nextTick(() => {
+        let wheelTimer = null
         let ref = this.$refs
         let that = this
         this.player = this.$video(ref.video, {
@@ -118,6 +153,9 @@ export default {
           // preload: '', // 建议浏览器是否应在<video>加载元素后立即开始下载视频数据。
           width: '',
           height: ref.videoContainer.getBoundingClientRect().height
+        })
+        ref.VideoPage.addEventListener('resize', function () {
+          that.player.height(ref.videoContainer.getBoundingClientRect().height)
         })
         this.player.on('canplaythrough', function () {
           that.player.height(ref.videoContainer.getBoundingClientRect().height)
@@ -174,6 +212,21 @@ export default {
         ref.close.addEventListener('click', function () {
           that.player.pause()
         })
+        ref.videoContainer.addEventListener('wheel', (ev) => {
+          if (ev.deltaY > 0) {
+            clearTimeout(wheelTimer)
+            wheelTimer = setTimeout(() => {
+              this.nextVideo()
+            }, 300)
+          } else if (ev.deltaY < 0) {
+            clearTimeout(wheelTimer)
+            wheelTimer = setTimeout(() => {
+              this.lastVideo()
+            }, 300)
+          }
+        }, {
+          passive: true
+        })
       })
     },
     duration (seconds) {
@@ -198,7 +251,6 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  cursor: pointer;
   overflow: hidden;
 
   .background {
@@ -219,71 +271,127 @@ export default {
       z-index: 5;
       backdrop-filter: blur(50px);
       background-color: rgba(255, 255, 255, 0.1);
-      .video {
+      .content-top{
         position: relative;
         height: 95%;
         width: 100%;
-        box-shadow: inset 0 0 40px 0 rgb(42, 42, 42);
-
-        .videoElement {
-          object-fit: contain;
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-        }
-
-        .close {
-          height: 60px;
-          width: 60px;
-          border-radius: 30px;
-          background-color: rgba(0, 0, 0, 0.2);
-          position: absolute;
-          right: 30px;
-          top: 30px;
+        display: flex;
+        .video {
           cursor: pointer;
-          font-size: 40px;
-          color: rgba(255, 255, 255, 0.2);
-          line-height: 60px;
-          text-align: center;
-        }
-
-        .close:hover {
-          background-color: rgba(0, 0, 0, 0.6);
-          color: rgba(255, 255, 255, 0.8);
-        }
-        .ProgressBar {
-          z-index: 7;
-          position: absolute;
-          bottom: 0;
-          left: 0;
+          position: relative;
+          height: 100%;
           width: 100%;
-          height: 4px;
-          background-color: rgba(255, 255, 255, 0.3);
-
-          .ProgressBar-fill {
+          min-width: 70%;
+          box-shadow: inset 0 0 40px 0 rgb(42, 42, 42);
+          .videoElement {
+            object-fit: contain;
             position: absolute;
-            z-index: 8;
-            height: 100%;
-            width: 0;
-            background-color: rgba(255, 255, 255, 0.8);
-            pointer-events: none;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+          }
+          .right{
+            width: 60px;
+            position: absolute;
+            right: 20px;
+            bottom: 0;
+            .VideoButton{
+              z-index: 10;
+            }
+          }
+          .close {
+            height: 60px;
+            width: 60px;
+            border-radius: 30px;
+            background-color: rgba(0, 0, 0, 0.2);
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            cursor: pointer;
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.2);
+            line-height: 60px;
+            text-align: center;
+            z-index: 10;
           }
 
-          .ProgressBar-drag {
+          .close:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+            color: rgba(255, 255, 255, 0.8);
+          }
+          .ProgressBar {
+            z-index: 7;
             position: absolute;
-            bottom: 2px;
-            transform: translate(0, 50%);
-            z-index: 2;
-            width: 10px;
-            height: 10px;
-            border-radius: 5px;
-            background-color: white;
-            cursor: pointer;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.3);
+
+            .ProgressBar-fill {
+              position: absolute;
+              z-index: 8;
+              height: 100%;
+              width: 0;
+              background-color: rgba(255, 255, 255, 0.8);
+              pointer-events: none;
+            }
+
+            .ProgressBar-drag {
+              position: absolute;
+              bottom: 2px;
+              transform: translate(0, 50%);
+              z-index: 2;
+              width: 10px;
+              height: 10px;
+              border-radius: 5px;
+              background-color: white;
+              cursor: pointer;
+            }
+          }
+        }
+        .comment{
+          position: relative;
+          height: 100%;
+          max-width: 30%;
+          width: 0;
+          background-color: rgba(0,0,0,0.3);
+          overflow: hidden;
+          transition: width 0.3s;
+          .header{
+            height: 50px;
+            width: 100%;
+            border-bottom: rgba(255,255,255,0.2) 1px solid;
+            .btn{
+              height: 50px;
+              line-height: 50px;
+              .left{
+                color: rgba(255,255,255,0.2);
+                font-size: 21px;
+                height: calc(100% - 3px);
+                padding-left: 10px;
+                padding-right: 10px;
+                display: inline-block;
+                font-weight: 700;
+                border-bottom: rgb(254,44,85) 3px solid;
+                cursor: pointer;
+              }
+              .right{
+                color: rgba(255,255,255,0.2);
+                font-size: 30px;
+                height: 100%;
+                margin-right: 10px;
+                font-weight: 700;
+                cursor: pointer;
+                float: right;
+              }
+              .right:hover{
+                color: white;
+              }
+            }
           }
         }
       }
-
       .control {
         z-index: 5;
         height: 5%;
@@ -322,8 +430,11 @@ export default {
           }
         }
       }
+      .commentDrawer{
+        position: absolute;
+        background-color: transparent;
+      }
     }
   }
-
 }
 </style>
