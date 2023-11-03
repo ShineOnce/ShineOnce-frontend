@@ -39,6 +39,7 @@ export default {
         left: 50%;
         transform: translate(-50%);
         i{
+          display: inline-block;
           position: relative;
           font-size: 30px;
           left: 50%;
