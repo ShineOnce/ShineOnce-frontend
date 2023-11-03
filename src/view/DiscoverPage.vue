@@ -177,7 +177,9 @@ export default {
       height.fill(0, 0, 5)
       columnCount = 5
       while (columnCount) {
-        width = math.subtract(math.divide(this.$refs.container.getBoundingClientRect().width, columnCount), 10)
+        if (this.$refs.container) {
+          width = math.subtract(math.divide(this.$refs.container.getBoundingClientRect().width, columnCount), 10)
+        }
         if (width > minWidth) {
           break
         }
