@@ -4,7 +4,7 @@
       <div class="content">
         <div class="content-top">
           <div class="video" ref="videoContainer">
-            <video class="videoElement video-js" ref="video">
+            <video class="videoElement video-js"  ref="video">
               <source :src="this.video.videoUrl" type="video/mp4"/>
             </video>
             <div class="close" @click="close" ref="close">
@@ -12,6 +12,8 @@
             </div>
             <div class="right">
               <span @click="$refs.comment.style.width='30%'">
+                <VideoButton :icon-class="'iconfont icon-aixin'" class="VideoButton" :count="31321" >
+                </VideoButton>
                 <VideoButton :icon-class="'el-icon-s-comment'" class="VideoButton" :count="1999" >
                 </VideoButton>
               </span>
@@ -155,10 +157,14 @@ export default {
           height: ref.videoContainer.getBoundingClientRect().height
         })
         ref.VideoPage.addEventListener('resize', function () {
-          that.player.height(ref.videoContainer.getBoundingClientRect().height)
+          if (ref.VideoPage) {
+            that.player.height(ref.videoContainer.getBoundingClientRect().height)
+          }
         })
         this.player.on('canplaythrough', function () {
-          that.player.height(ref.videoContainer.getBoundingClientRect().height)
+          if (ref.videoContainer) {
+            that.player.height(ref.videoContainer.getBoundingClientRect().height)
+          }
           that.videoStatus.duration = that.player.duration() // 初始化时长
         })
         this.player.on('ended', function () {
@@ -284,7 +290,6 @@ export default {
           min-width: 70%;
           box-shadow: inset 0 0 40px 0 rgb(42, 42, 42);
           .videoElement {
-            object-fit: contain;
             position: absolute;
             left: 50%;
             top: 50%;

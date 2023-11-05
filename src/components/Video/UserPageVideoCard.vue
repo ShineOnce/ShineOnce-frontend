@@ -1,7 +1,7 @@
 <template>
-  <div id="VideoCard" ref="videoCard">
-    <div class="videoBox" v-if="this.video.videoUrl">
-      <video class="videoElement video-js" @click="$router.replace('video/' + video.id) " ref="video">
+  <div class="UserPageVideoCard">
+    <div class="VideoContainer" ref="VideoContainer">
+      <video class="videoElement video-js" @click="$router.replace('/video/' + video.id) " ref="video">
         <source :src="this.video.videoUrl" type="video/mp4"/>
         <source :src="this.video.videoUrl" type="application/x-mpegURL">
       </video>
@@ -22,43 +22,23 @@
         <div class="ProgressBar-drag" ref="progress_bar_drag"></div>
       </div>
     </div>
-    <routerLink :to="'video/'+this.video.id" tag="span">
-      <div class="text" v-if="this.video.videoUrl">
-        <div class="center">
-          <div class="desc">
-            {{this.video.title}}
-          </div>
-          <div class="info">
-            <span>@ dlam</span>
-            <span>· 23小时前</span>
-          </div>
-        </div>
-      </div>
-    </routerLink>
+    <div class="desc">
+      啊和让我看你嗯问问看老师发的你是二位就让我二块五嫩
+    </div>
   </div>
 </template>
 
 <script>
-
 export default {
-  name: 'VideoCard',
+  name: 'UserPageVideoCard',
   data () {
     return {
     }
   },
-  created () {
-    this.GetVideo()
-  },
   props: {
     video: {
-      id: '',
       videoUrl: '',
-      CountyCoverUrl: ''
-    },
-    sortCard: {
-      type: Function,
-      require: true,
-      default: null
+      id: 0
     }
   },
   methods: {
@@ -69,8 +49,8 @@ export default {
           poster: this.video.CountyCoverUrl, // 封面
           // autoplay: 'muted', // 自动播放属性,muted:静音播放
           preload: 'auto', // 建议浏览器是否应在<video>加载元素后立即开始下载视频数据。
-          width: this.$refs.videoCard.getBoundingClientRect().width,
-          height: '',
+          width: '',
+          height: this.$refs.VideoContainer.getBoundingClientRect().height,
           // height: this.$math.multiply(this.$refs.videoCard.getBoundingClientRect().width, this.video.times),
           controlBar: {
             children: [
@@ -83,16 +63,9 @@ export default {
         var videoContainer = player.el() // 获取视频容器元素
         // 当鼠标进入视频容器时播放视频
         var ref = this.$refs
-        var that = this
-        window.addEventListener('resize', function () {
-          if (ref.videoCard) {
-            player.width(ref.videoCard.getBoundingClientRect().width)
-          }
-          // player.height(that.$math.multiply(ref.videoCard.getBoundingClientRect().width, that.video.times))
-        })
+        // var that = this
         player.on('canplaythrough', function () {
-          player.width(ref.videoCard.getBoundingClientRect().width)
-          that.sortCard()
+          player.height(ref.VideoContainer.getBoundingClientRect().height)
           // player.height(that.$math.multiply(ref.videoCard.getBoundingClientRect().width, that.video.times))
         })
         videoContainer.addEventListener('mouseenter', function () {
@@ -139,7 +112,7 @@ export default {
           player.currentTime(newTime)
           player.play()
         })
-        this.$refs.videoCard.addEventListener('mousemove', (ev) => {
+        this.$refs.VideoContainer.addEventListener('mousemove', (ev) => {
           if (drag) {
             var x = ev.clientX - progressBarFill.getBoundingClientRect().left
             if (x !== 0) {
@@ -151,12 +124,12 @@ export default {
             }
           }
         })
-        this.$refs.videoCard.addEventListener('mouseleave', ev => {
+        this.$refs.VideoContainer.addEventListener('mouseleave', ev => {
           ref.progress_bar.style.visibility = 'hidden'
           ref.videoInfo.style.visibility = 'visible'
           drag = false
         })
-        this.$refs.videoCard.addEventListener('mouseup', ev => {
+        this.$refs.VideoContainer.addEventListener('mouseup', ev => {
           drag = false
         })
       })
@@ -168,133 +141,94 @@ export default {
       return String((seconds / 60).toFixed(0)).padStart(2, '0') + ':' + String(seconds % 60).padStart(2, '0')
     }
   },
-  computed: {
+  mounted () {
+    this.GetVideo()
   }
 }
 </script>
 
 <style scoped lang="scss">
-
-#VideoCard {
-  user-select: none;
-  position: relative;
-  background-color: rgb(37, 38, 50);
-  width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-
-  .videoBox {
+  .UserPageVideoCard{
     position: relative;
-
-    .custom-video-player {
+    width: 180px;
+    height: 300px;
+    .VideoContainer{
+      height: 90%;
+      background-color: transparent;
+      width: 100%;
       position: relative;
-      width: 100%;
-    }
-
-    .ProgressBar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      visibility: hidden;
-      background-color: rgba(255, 255, 255, 0.3);
-      z-index: 2;
-      .ProgressBar-fill {
-        height: 100%;
-        width: 0;
-        background-color: rgba(255, 255, 255, 0.8);
-        pointer-events: none;
+      overflow: hidden;
+      .videoInfo{
+        width: 100%;
+        height: 30px;
+        background-color: transparent;
+        position: absolute;
+        z-index: 2;
+        bottom: 0px;
+        .duration{
+          position: absolute;
+          margin-right: 5px;
+          padding: 3px 5px;
+          background-color: rgba(0,0,0,0.7);
+          border-radius: 5px;
+          color: white;
+          font-size: 11px;
+          right: 0;
+        }
+        .numsOfLike{
+          position: absolute;
+          left: 0;
+          margin-left: 5px;
+          padding: 3px 5px;
+          color: white;
+          span{
+            display: inline-block;
+            position: relative;
+            transform: translate(0,-20%);
+          }
+        }
       }
-
-      .ProgressBar-drag {
+      .videoElement{
+        //position: absolute;
+        transform: translate(-50%);
+        left: 50%;
+      }
+      .ProgressBar {
         position: absolute;
         bottom: 0;
-        transform: translate(0, 50%);
-        z-index: 2;
-        width: 10px;
-        height: 10px;
-        border-radius: 5px;
-        background-color: #fff;
-        cursor: pointer;
-      }
-    }
-
-    .videoElement {
-      position: relative;
-      width: 100%;
-      background-color: transparent;
-    }
-    .videoInfo{
-      width: 100%;
-      height: 30px;
-      background-color: transparent;
-      position: absolute;
-      z-index: 2;
-      bottom: 0px;
-      .duration{
-        position: absolute;
-        margin-right: 5px;
-        padding: 3px 5px;
-        background-color: rgba(0,0,0,0.7);
-        border-radius: 5px;
-        color: white;
-        font-size: 11px;
-        right: 0;
-      }
-      .numsOfLike{
-        position: absolute;
         left: 0;
-        margin-left: 5px;
-        padding: 3px 5px;
-        color: white;
-        span{
-          display: inline-block;
-          position: relative;
-          transform: translate(0,-20%);
+        width: 100%;
+        height: 2px;
+        visibility: hidden;
+        background-color: rgba(255, 255, 255, 0.3);
+        z-index: 2;
+        .ProgressBar-fill {
+          height: 100%;
+          width: 0;
+          background-color: rgba(255, 255, 255, 0.8);
+          pointer-events: none;
+        }
+
+        .ProgressBar-drag {
+          position: absolute;
+          bottom: 0;
+          transform: translate(0, 50%);
+          z-index: 2;
+          width: 10px;
+          height: 10px;
+          border-radius: 5px;
+          background-color: #fff;
+          cursor: pointer;
         }
       }
     }
-  }
-
-  .text {
-    position: relative;
-    max-width: 100%;
-    padding: 12px;
-
-    .center {
-      position: relative;
+    .desc{
+      height: 10%;
       width: 100%;
-
-      .desc {
-        width: 100%;
-        word-wrap: break-word;
-        word-break: break-all;
-        varter-spacing: 1px;
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .info {
-        color: rgb(152, 153, 158);
-        width: 100%;
-        margin: 6px 0 0;
-
-        span {
-          font-size: 13px;
-          margin: 0 10px 0 0;
-        }
-      }
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
-
-}
-
-#VideoCard:hover {
-  .text {
-    transition: all 0.7s;
-    background-color: rgba(51, 52, 63);
-    text-overflow: ellipsis;
-  }
-}
-
 </style>
